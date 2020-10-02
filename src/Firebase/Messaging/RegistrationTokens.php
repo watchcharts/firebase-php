@@ -68,7 +68,7 @@ final class RegistrationTokens implements Countable, IteratorAggregate
     }
 
     /**
-     * @return RegistrationToken[]
+     * @return array<RegistrationToken>
      */
     public function values(): array
     {
