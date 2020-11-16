@@ -18,6 +18,9 @@ final class SignInWithIdpCredentials implements SignIn
     /** @var string|null */
     private $oauthTokenSecret;
 
+    /** @var string|null */
+    private $nonce;
+
     /** @var string */
     private $requestUri = 'http://localhost';
 
@@ -51,6 +54,14 @@ final class SignInWithIdpCredentials implements SignIn
         return $instance;
     }
 
+    public static function withIdTokenAndNonce(string $provider, string $idToken, string $nonce): self
+    {
+        $instance = self::withIdToken($provider, $idToken);
+        $instance->nonce = $nonce;
+
+        return $instance;
+    }
+
     public function withRequestUri(string $requestUri): self
     {
         $instance = clone $this;
@@ -67,6 +78,11 @@ final class SignInWithIdpCredentials implements SignIn
     public function oauthTokenSecret(): ?string
     {
         return $this->oauthTokenSecret;
+    }
+
+    public function nonce(): ?string
+    {
+        return $this->nonce;
     }
 
     public function accessToken(): ?string

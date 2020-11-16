@@ -82,7 +82,7 @@ final class GuzzleHandler implements Handler
             case $action instanceof SignInWithRefreshToken:
                 return $this->refreshToken($action);
             default:
-                throw new FailedToSignIn(static::class.' does not support '.\get_class($action));
+                throw new FailedToSignIn(static::class . ' does not support ' . \get_class($action));
         }
     }
 
@@ -151,6 +151,10 @@ final class GuzzleHandler implements Handler
 
         if ($action->oauthTokenSecret()) {
             $postBody['oauth_token_secret'] = $action->oauthTokenSecret();
+        }
+
+        if ($action->nonce()) {
+            $postBody['nonce'] = $action->nonce();
         }
 
         $body = Utils::streamFor(\json_encode(\array_merge(self::$defaultBody, [

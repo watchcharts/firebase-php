@@ -212,8 +212,7 @@ class Auth
     {
         return $this->createUser(Request\CreateUser::new()
             ->withUnverifiedEmail($email)
-            ->withClearTextPassword($password)
-        );
+            ->withClearTextPassword($password));
     }
 
     /**
@@ -484,7 +483,7 @@ class Auth
      */
     public function setCustomUserAttributes($uid, array $attributes): UserRecord
     {
-        Deprecation::trigger(__METHOD__, __CLASS__.'::setCustomUserClaims($uid, $claims)');
+        Deprecation::trigger(__METHOD__, __CLASS__ . '::setCustomUserClaims($uid, $claims)');
 
         $this->setCustomUserClaims($uid, $attributes);
 
@@ -502,7 +501,7 @@ class Auth
      */
     public function deleteCustomUserAttributes($uid): UserRecord
     {
-        Deprecation::trigger(__METHOD__, __CLASS__.'::setCustomUserClaims($uid, null)');
+        Deprecation::trigger(__METHOD__, __CLASS__ . '::setCustomUserClaims($uid, null)');
 
         $this->setCustomUserClaims($uid, null);
 
@@ -544,7 +543,7 @@ class Auth
         try {
             return (new Parser())->parse($tokenString);
         } catch (Throwable $e) {
-            throw new InvalidArgumentException('The given token could not be parsed: '.$e->getMessage());
+            throw new InvalidArgumentException('The given token could not be parsed: ' . $e->getMessage());
         }
     }
 
@@ -593,9 +592,9 @@ class Auth
             }
 
             $tokenAuthenticatedAt = DT::toUTCDateTimeImmutable($verifiedToken->getClaim('auth_time'));
-            $tokenAuthenticatedAtWithLeeway = $tokenAuthenticatedAt->modify('-'.$leewayInSeconds.' seconds');
+            $tokenAuthenticatedAtWithLeeway = $tokenAuthenticatedAt->modify('-' . $leewayInSeconds . ' seconds');
 
-            $validSinceWithLeeway = DT::toUTCDateTimeImmutable($validSince)->modify('-'.$leewayInSeconds.' seconds');
+            $validSinceWithLeeway = DT::toUTCDateTimeImmutable($validSince)->modify('-' . $leewayInSeconds . ' seconds');
 
             if ($tokenAuthenticatedAtWithLeeway < $validSinceWithLeeway) {
                 throw new RevokedIdToken($verifiedToken);
@@ -871,7 +870,7 @@ class Auth
      *
      * @throws FailedToSignIn
      */
-    public function signInWithIdpIdToken($provider, $idToken, $redirectUrl = null): SignInResult
+    public function signInWithIdpIdToken($provider, $idToken, $redirectUrl = null, ?string $nonce = null): SignInResult
     {
         $provider = $provider instanceof Provider ? (string) $provider : $provider;
 
@@ -885,7 +884,11 @@ class Auth
             $redirectUrl = (string) $redirectUrl;
         }
 
-        $action = SignInWithIdpCredentials::withIdToken($provider, $idToken);
+        if ($nonce) {
+            $action = SignInWithIdpCredentials::withIdTokenAndNonce($provider, $idToken, $nonce);
+        } else {
+            $action = SignInWithIdpCredentials::withIdToken($provider, $idToken);
+        }
 
         if ($redirectUrl) {
             $action = $action->withRequestUri($redirectUrl);
